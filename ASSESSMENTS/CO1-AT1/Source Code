@@ -1,0 +1,128 @@
+import math
+import time
+
+SERVER_SPEED = 10**8
+n = 1_000_000
+
+# M1: Duplicate detection using nested loops
+def duplicate_detector(products):
+    comparisons = 0
+    duplicates = []
+    for i in range(len(products) - 1):
+        for j in range(i + 1, len(products)):
+            comparisons += 1
+            if products[i] == products[j]:
+                duplicates.append(j)
+    return duplicates, comparisons
+
+# M2: API rate limiter
+def rate_limiter(n):
+    i = 1
+    audits = 0
+    while i < n:
+        for j in range(i):
+            audits += 1
+        i *= 2
+    return audits
+
+# M3: S1 Sequential search
+def sequential_search(arr, key):
+    comparisons = 0
+    for i, item in enumerate(arr):
+        comparisons += 1
+        if item == key:
+            return i, comparisons
+    return -1, comparisons
+
+# M3: S2 Binary search
+def binary_search(arr, key):
+    low, high = 0, len(arr) - 1
+    comparisons = 0
+    while low <= high:
+        mid = (low + high) // 2
+        comparisons += 1
+        if arr[mid] == key:
+            return mid, comparisons
+        elif arr[mid] < key:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1, comparisons
+
+# M4: Current design operation-count recurrence
+def m4_current(n):
+    if n <= 1:
+        return 1
+    return 4 * m4_current(n // 2) + n
+
+# M4: Proposed design operation-count recurrence
+def m4_proposed(n):
+    if n <= 1:
+        return 1
+    return 2 * m4_proposed(n // 2) + n
+
+# M5: Recursion-tree estimate
+def m5_estimate(n):
+    k = math.log2(n)
+    return n * k * (k + 1) / 2
+
+# Report generator
+def report_operations(n):
+    return 3 * n**2 + 10 * n * math.log2(n) + 50
+
+# Convert operations to seconds
+def seconds(operations):
+    return operations / SERVER_SPEED
+
+# Display scalability estimates
+print("SHOPSPHERE SCALABILITY AUDIT")
+print("-" * 45)
+
+m1_ops = n * (n - 1) // 2
+m2_ops = 2**math.ceil(math.log2(n)) - 1
+s2_ops = math.ceil(math.log2(n)) + 1
+m4_old_ops = n**2
+m4_new_ops = n * math.log2(n)
+m5_ops = m5_estimate(n)
+report_ops = report_operations(n)
+
+results = [
+    ("M1 Duplicate Detector", m1_ops),
+    ("M2 API Rate Limiter", m2_ops),
+    ("S2 Binary Search", s2_ops),
+    ("M4 Current Design (estimate)", m4_old_ops),
+    ("M4 Proposed Design (estimate)", m4_new_ops),
+    ("M5 Analytics (estimate)", m5_ops),
+    ("Nightly Report Generator", report_ops)
+]
+
+for name, operations in results:
+    print(f"\n{name}")
+    print(f"Operations: {operations:,.2f}")
+    print(f"Time: {seconds(operations):,.6f} seconds")
+    if seconds(operations) > 600:
+        print("Decision: Exceeds 10-minute window")
+    else:
+        print("Decision: Within 10-minute window")
+
+print("\nM2 Verification for n = 1024")
+print("Audit operations:", rate_limiter(1024))
+
+print("\nS2 Recurrence")
+print("T(n) = T(n/2) + 1")
+print("T(1) = 1")
+print("Closed form for powers of 2: T(n) = log2(n) + 1")
+print("Time complexity: Theta(log n)")
+print("Iterative space: Theta(1)")
+print("Recursive space: Theta(log n)")
+
+print("\nAsymptotic Results")
+print("M1: Theta(n^2)")
+print("M2: Theta(n)")
+print("S1: Theta(n) worst case")
+print("S2: Theta(log n)")
+print("M4 Current: Theta(n^2)")
+print("M4 Proposed: Theta(n log n)")
+print("M5 Analytics: Theta(n (log n)^2)")
+print("Report Generator: Theta(n^2)")
+
